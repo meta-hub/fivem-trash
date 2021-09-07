@@ -17,7 +17,7 @@ for model,group in pairs(Config.Models) do
 end 
 
 function showHelpNotification(group)
-  DisplayHelpTextThisFrame(string.format('trash_help:%s',group), false)
+  DisplayHelpTextThisFrame(string.format('trash_help:%s',group),false)
 end
 
 function getClosestObject()
@@ -46,21 +46,32 @@ function getClosestObject()
 end
 
 Citizen.CreateThread(function()
+  local closest,pos,hash,dist
+  local lastCheck = GetGameTimer()
+
   while true do
     local waitTime = 500
+    local now = GetGameTimer()
 
-    local closest,pos,hash,dist = getClosestObject()
-    if closest and not busy then
-      local group = groupLookup[hash]
-      showHelpNotification(group)
-
-      if IsControlJustPressed(0,Config.InteractControl) then
-        busy = true
-        playAnimation()
-        TriggerServerEvent("trash:searchTrash",pos,hash)
+    if not busy then
+      if now - lastCheck >= 500 then
+        closest,pos,hash,dist = getClosestObject()
+        lastCheck = now
       end
 
-      waitTime = 0
+      if closest then
+        local group = groupLookup[hash]
+        showHelpNotification(group)
+
+        if IsControlJustPressed(0,Config.InteractControl) then
+          busy = true
+          FreezeEntityPosition(closest,true)
+          playAnimation()
+          TriggerServerEvent("trash:searchTrash",pos,hash)
+        end
+
+        waitTime = 0
+      end
     end
 
     Wait(waitTime)
