@@ -105,7 +105,7 @@ if Config.Target then
     })
   end)
 else
-  Citizen.CreateThread(function()
+  CreateThread(function()
     local closest,pos,hash,dist
     local lastCheck = GetGameTimer()
 
