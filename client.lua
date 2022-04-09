@@ -45,41 +45,107 @@ function getClosestObject()
   return closestObj,closestPos,closestHash,closestDist
 end
 
-Citizen.CreateThread(function()
-  local closest,pos,hash,dist
-  local lastCheck = GetGameTimer()
-
-  while true do
-    local waitTime = 500
-    local now = GetGameTimer()
-
-    if not busy then
-      if now - lastCheck >= 500 then
-        closest,pos,hash,dist = getClosestObject()
-        lastCheck = now
-      end
-
-      if closest then
-        local group = groupLookup[hash]
-        showHelpNotification(group)
-
-        if IsControlJustPressed(0,Config.InteractControl) then
-          busy = true
-          FreezeEntityPosition(closest,true)
-          playAnimation()
-          TriggerServerEvent("trash:searchTrash",pos,hash)
-        end
-
-        waitTime = 0
-      end
-    end
-
-    Wait(waitTime)
-  end
-end)
-
 RegisterNetEvent("trash:searchedTrash")
 AddEventHandler("trash:searchedTrash",function(id)
   exports["mf-inventory"]:openOtherInventory(id)
   busy = false
 end)
+
+Dumpster = {}
+local models = {
+  `prop_bin_01a`, 
+  `prop_bin_02a`,    
+  `prop_bin_03a`,   
+  `prop_bin_04a`,  
+  `prop_bin_05a`,    
+  `prop_bin_06a`,    
+  `prop_bin_07a`,      
+  `prop_bin_07b`,     
+  `prop_bin_07c`,      
+  `prop_bin_07d`,     
+  `prop_bin_08a`,  
+  `prop_bin_09a`,    
+  `prop_bin_010a`,
+  `prop_bin_011a`,   
+  `prop_bin_011b`,   
+  `prop_bin_012a`,  
+  `prop_bin_013a`,   
+  `prop_bin_014a`,
+  `prop_bin_014b`,
+  `prop_bin_beach_01a`,
+  `prop_bin_beach_01d`,
+  `prop_bin_delpiero`,
+  `prop_bin_delpiero_b`,
+  `prop_cs_dumpster_01a`,
+  `p_dumpster_t`,
+  `prop_snow_dumpster_01`,
+  `prop_dumpster_01a`,
+  `prop_dumpster_02a`,
+  `prop_dumpster_02b`,
+  `prop_dumpster_3a`,
+  `prop_dumpster_4a`,
+  `prop_dumpster_4b`
+}
+
+if Config.Target then
+  CreateThread(function()
+    exports["fivem-target"]:AddTargetModels({
+      name = "dumpster_dive",
+      label = "Dumpster",
+      icon = "fas fa-dumpster",
+      models = models,
+      interactDist = 2.5,
+      onInteract = Dumpster.OnInteract,
+      options = {
+        {
+          name = "search_dumpster",
+          label = "Search Dumpster"
+        }
+      }  
+    })
+  end)
+else
+  Citizen.CreateThread(function()
+    local closest,pos,hash,dist
+    local lastCheck = GetGameTimer()
+
+    while true do
+      local waitTime = 500
+      local now = GetGameTimer()
+
+      if not busy then
+        if now - lastCheck >= 500 then
+          closest,pos,hash,dist = getClosestObject()
+          lastCheck = now
+        end
+
+        if closest then
+          local group = groupLookup[hash]
+          showHelpNotification(group)
+
+          if IsControlJustPressed(0,Config.InteractControl) then
+            busy = true
+            FreezeEntityPosition(closest,true)
+            playAnimation()
+            TriggerServerEvent("trash:searchTrash",pos,hash)
+          end
+
+          waitTime = 0
+        end
+      end
+
+      Wait(waitTime)
+    end
+  end)
+end
+
+Dumpster.OnInteract = function(targetName, optionName)
+  if optionName == "search_dumpster" then
+    local closest,pos,hash,dist = getClosestObject()
+
+    if closest then
+      FreezeEntityPosition(closest,true)
+      TriggerServerEvent("trash:searchTrash",pos,hash)
+    end
+  end
+end
