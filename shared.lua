@@ -1,4 +1,5 @@
 Config = {
+  Target = true, -- false if you want Press E
   -- min interact radius
   InteractRadius = 2.0,
 
@@ -34,12 +35,12 @@ Config = {
         chance  = 5                 -- chance of finding this
       }
     },
-    dumpster = {
+    dumpster_loot = {
       {
         name    = "weapon_smg",     -- name of item or account
         min     = 1,                -- min possible to find
         max     = 1,                -- max possible to find
-        chance  = 5                 -- chance of finding this
+        chance  = 25                 -- chance of finding this
       }
     },
   },
@@ -62,7 +63,6 @@ Config = {
     dumpster = {
       label = "dumpster",
       lootTables = {
-        'bin_loot',
         'dumpster_loot'
       }
     }
@@ -93,5 +93,14 @@ Config = {
     prop_bin_beach_01d  = "beach_bin",
     prop_bin_delpiero   = "bin",
     prop_bin_delpiero_b = "bin",
+    prop_cs_dumpster_01a = "dumpster",
+    p_dumpster_t = "dumpster",
+    prop_snow_dumpster_01 = "dumpster",
+    prop_dumpster_01a = "dumpster",
+    prop_dumpster_02a = "dumpster",
+    prop_dumpster_02b = "dumpster",
+    prop_dumpster_3a = "dumpster",
+    prop_dumpster_4a = "dumpster",
+    prop_dumpster_4b = "dumpster",
   }
 }
